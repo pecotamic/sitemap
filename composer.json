@@ -1,0 +1,30 @@
+{
+    "name": "pecotamic/sitemap",
+    "description": "Simple sitemap addon for Statamic v3",
+    "type": "statamic-addon",
+    "license": "MIT",
+    "require": {
+        "php": "^7.3.4",
+        "statamic/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pecotamic\\Sitemap\\": "src"
+        }
+    },
+    "authors": [{
+        "name": "Werner Freytag",
+        "email": "wf@pecora.de"
+    }],
+    "extra": {
+        "statamic": {
+            "name": "Pecotamic Sitemap",
+            "description": "Sitemap addon"
+        },
+        "laravel": {
+            "providers": [
+                "Pecotamic\\Sitemap\\ServiceProvider"
+            ]
+        }
+    }
+}
