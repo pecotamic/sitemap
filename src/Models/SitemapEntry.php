@@ -2,8 +2,6 @@
 
 namespace Pecotamic\Sitemap\Models;
 
-use Statamic\Entries\Entry;
-
 class SitemapEntry
 {
     public $path;
@@ -12,7 +10,7 @@ class SitemapEntry
     public $changefreq;
     public $priority;
 
-    public function __construct(Entry $data)
+    public function __construct($data)
     {
         $augmented = $data->newAugmentedInstance();
 
