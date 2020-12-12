@@ -39,6 +39,10 @@ class Sitemap
                 return $collection->queryEntries()->get();
             })
             ->filter(function ($entry) {
+                if (!preg_match('#^https?://#', $entry->absoluteUrl())) {
+                    return false;
+                }
+
                 return $entry->status() === 'published';
             });
     }
