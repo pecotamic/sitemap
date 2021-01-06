@@ -116,7 +116,7 @@ class Sitemap
 
     private static function isExcluded($url, $exluded_urls)
     {
-        return $exluded_urls->contains(function ($value) {
+        return $exluded_urls->contains(function ($value) use ($url) {
             return preg_match($value, $url);
         });
     }
