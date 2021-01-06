@@ -16,15 +16,15 @@ class Sitemap
 
         $entries = collect();
 
-        if (config('pecotamic.sitemap.include_entries')) {
+        if (config('pecotamic.sitemap.include_entries', true)) {
             $entries = $entries->merge(self::toSitemapEntries($sitemap->publishedEntries()));
         }
 
-        if (config('pecotamic.sitemap.include_terms')) {
+        if (config('pecotamic.sitemap.include_terms', true)) {
             $entries = $entries->merge(self::toSitemapEntries($sitemap->publishedTerms()));
         }
 
-        if (config('pecotamic.sitemap.include_collection_terms')) {
+        if (config('pecotamic.sitemap.include_collection_terms', true)) {
             $entries = $entries->merge(self::toSitemapEntries($sitemap->publishedCollectionTerms()));
         }
 
@@ -43,7 +43,7 @@ class Sitemap
         });
     }
 
-    protected function publishedEntries(): \Illuminate\Support\Collection
+    protected static function publishedEntries(): \Illuminate\Support\Collection
     {
         $exluded_urls = self::getExcludedUrlCollection();
         $entry_types = config('pecotamic.sitemap.entry_types');
@@ -57,12 +57,12 @@ class Sitemap
                     return false;
                 }
 
-                // is excluded by url pattern
+                // is excluded by url pattern?
                 if (self::isExcluded($entry->url(), $exluded_urls)) {
                     return false;
                 }
 
-                // is an included entry type
+                // is an included entry type?
                 if ($entry_types !== null && !in_array($entry->collectionHandle(), $entry_types)) {
                     return false;
                 }
@@ -71,7 +71,7 @@ class Sitemap
             });
     }
 
-    protected function publishedTerms()
+    protected static function publishedTerms()
     {
         $exluded_urls = self::getExcludedUrlCollection();
 
@@ -82,8 +82,7 @@ class Sitemap
             ->filter
             ->published()
             ->filter(function ($term) use ($exluded_urls) {
-
-                if (self::isExcluded($entry->url(), $exluded_urls)) {
+                if (self::isExcluded($term->url(), $exluded_urls)) {
                     return false;
                 }
 
@@ -91,7 +90,7 @@ class Sitemap
             });
     }
 
-    protected function publishedCollectionTerms()
+    protected static function publishedCollectionTerms()
     {
         $exluded_urls = self::getExcludedUrlCollection();
 
@@ -105,8 +104,7 @@ class Sitemap
             ->filter
             ->published()
             ->filter(function ($term) use ($exluded_urls) {
-
-                if (self::isExcluded($entry->url(), $exluded_urls)) {
+                if (self::isExcluded($term->url(), $exluded_urls)) {
                     return false;
                 }
 
@@ -121,7 +119,7 @@ class Sitemap
         });
     }
 
-    private function getExcludedUrlCollection()
+    private static function getExcludedUrlCollection()
     {
         return collect(config('pecotamic.sitemap.exclude_urls', []));
     }
