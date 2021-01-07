@@ -4,7 +4,7 @@
     "type": "statamic-addon",
     "license": "MIT",
     "require": {
-        "php": "^5.3.2 || ^7.0 || ^8.0",
+        "php": "^5.4 || ^7.0 || ^8.0",
         "statamic/cms": "^3.0.0"
     },
     "autoload": {
