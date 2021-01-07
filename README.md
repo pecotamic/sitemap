@@ -45,3 +45,7 @@ An array of sitemap **entries** is passed to the view template. Each **entry** h
  * **priority**: The entry property `property`, if available 
 
 The missing values can be overriden in the template.
+
+## Credits
+
+Thanks for code contribution to Prageeth Silva.
