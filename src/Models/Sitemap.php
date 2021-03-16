@@ -15,6 +15,8 @@ class Sitemap
         $sitemap = new static;
 
         $entries = collect();
+
+        // collect
         if (config('pecotamic.sitemap.include_entries', true)) {
             $entries = $entries->merge($sitemap->publishedEntries(config('pecotamic.sitemap.entry_types')));
         }
@@ -24,13 +26,26 @@ class Sitemap
         if (config('pecotamic.sitemap.include_collection_terms', true)) {
             $entries = $entries->merge($sitemap->publishedCollectionTerms());
         }
+
+        // filter by config
         if ($excludedUrls = config('pecotamic.sitemap.exclude_urls')) {
-            $entries = self::filterEntriesByUrlPatterns($entries, $excludedUrls);
+            $entries = $entries->filter(self::excludedUrlsFilter($excludedUrls));
+        }
+
+        // filter by function
+        if ($callback = config('pecotamic.sitemap.filter')) {
+            $entries = $entries->filter($callback);
         }
 
         return $entries
             ->map(function ($entry) {
-                return new SitemapEntry($entry);
+                $properties = self::sitemapProperties($entry);
+
+                if ($callback = config('pecotamic.sitemap.properties')) {
+                    $properties = ($callback($entry) ?? []) + $properties;
+                }
+
+                return new SitemapEntry($properties['loc'], $properties['lastmod'], $properties['changefreq'], $properties['priority']);
             })
             ->values()
             ->sortBy(function (SitemapEntry $entry) {
@@ -55,6 +70,11 @@ class Sitemap
 
                 return $entry->published();
             });
+    }
+
+    protected static function isAbsoluteUrl(string $url): bool
+    {
+        return preg_match('#^https?://#', $url);
     }
 
     protected function publishedTerms()
@@ -86,14 +106,9 @@ class Sitemap
             });
     }
 
-    protected static function isAbsoluteUrl(string $url): bool
+    protected static function excludedUrlsFilter(array $excludedUrls): callable
     {
-        return preg_match('#^https?://#', $url);
-    }
-
-    protected static function filterEntriesByUrlPatterns(\Illuminate\Support\Collection $entries, array $excludedUrls): \Illuminate\Support\Collection
-    {
-        return $entries->filter(function ($entry) use ($excludedUrls) {
+        return function ($entry) use ($excludedUrls) {
             $url = $entry->url();
             foreach ($excludedUrls as $pattern) {
                 if (preg_match($pattern, $url)) {
@@ -102,6 +117,18 @@ class Sitemap
             }
 
             return true;
-        });
+        };
+    }
+
+    protected static function sitemapProperties($entry): array
+    {
+        $augmented = $entry->newAugmentedInstance();
+
+        return [
+            'loc' => $augmented->get('absolute_url'),
+            'lastmod' => $augmented->get('updated_at'),
+            'changefreq' => $augmented->get('change_frequency'),
+            'priority' => $augmented->get('priority'),
+        ];
     }
 }

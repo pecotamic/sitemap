@@ -10,14 +10,12 @@ class SitemapEntry
     public $changefreq;
     public $priority;
 
-    public function __construct($data)
+    public function __construct(string $loc, \DateTime $lastmod, ?string $changefreq = null, ?float $priority = null)
     {
-        $augmented = $data->newAugmentedInstance();
-
-        $this->loc = $augmented->get('absolute_url');
-        $this->path = parse_url($this->loc)['path'] ?? '/';
-        $this->lastmod = $augmented->get('updated_at');
-        $this->changefreq = $augmented->get('change_frequency');
-        $this->priority = $augmented->get('priority');
+        $this->loc = $loc;
+        $this->path = parse_url($loc)['path'] ?? '/';
+        $this->lastmod = $lastmod;
+        $this->changefreq = $changefreq;
+        $this->priority = $priority;
     }
 }
