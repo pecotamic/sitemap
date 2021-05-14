@@ -125,7 +125,7 @@ class Sitemap
         $augmented = $entry->newAugmentedInstance();
 
         return [
-            'loc' => $augmented->get('absolute_url'),
+            'loc' => $augmented->get('permalink') ?? $augmented->get('absolute_url'),
             'lastmod' => $augmented->get('updated_at'),
             'changefreq' => $augmented->get('change_frequency'),
             'priority' => $augmented->get('priority'),
