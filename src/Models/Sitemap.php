@@ -3,6 +3,7 @@
 namespace Pecotamic\Sitemap\Models;
 
 use Statamic\Facades\Collection;
+use Statamic\Facades\Site;
 use Statamic\Facades\Taxonomy;
 
 class Sitemap
@@ -26,6 +27,9 @@ class Sitemap
         if (config('pecotamic.sitemap.include_collection_terms', true)) {
             $entries = $entries->merge($sitemap->publishedCollectionTerms());
         }
+
+        // filter by current site
+        $entries = $entries->filter(self::siteFilter(Site::current()->handle()));
 
         // filter by config
         if ($excludedUrls = config('pecotamic.sitemap.exclude_urls')) {
@@ -106,9 +110,16 @@ class Sitemap
             });
     }
 
+    protected static function siteFilter($currentSite): callable
+    {
+        return static function ($entry) use ($currentSite) {
+            return $entry->locale() === $currentSite;
+        };
+    }
+
     protected static function excludedUrlsFilter(array $excludedUrls): callable
     {
-        return function ($entry) use ($excludedUrls) {
+        return static function ($entry) use ($excludedUrls) {
             $url = $entry->url();
             foreach ($excludedUrls as $pattern) {
                 if (preg_match($pattern, $url)) {
