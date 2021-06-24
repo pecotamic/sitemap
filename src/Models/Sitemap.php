@@ -65,7 +65,7 @@ class Sitemap
                 return $collection->queryEntries()->get();
             })
             ->filter(function ($entry) use ($entryTypes) {
-                if (!self::isAbsoluteUrl($entry->absoluteUrl())) {
+                if (($absoluteUrl = $entry->absoluteUrl()) === null || !self::isAbsoluteUrl($absoluteUrl)) {
                     return false;
                 }
                 if ($entryTypes !== null && !in_array($entry->collectionHandle(), $entryTypes)) {
