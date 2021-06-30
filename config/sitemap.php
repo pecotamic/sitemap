@@ -1,8 +1,5 @@
 <?php
 
-use Statamic\Entries\Entry;
-use Statamic\Taxonomies\LocalizedTerm;
-
 return [
     'url' => 'sitemap.xml',
     'expire' => 60,
@@ -23,58 +20,67 @@ return [
     'exclude_urls' => [],
 
     /**
-     * Filter entries by callback
+     * Callable to filter entries (optional)
      *
-     * @param  LocalizedTerm|Entry  $entry
-     * @return bool
+     * Argument:
+     *      $entry: Statamic\Taxonomies\LocalizedTerm|Statamic\Entries\Entry
+     *
+     * Result:
+     *     bool: when false, exclude the entry from the sitemap
+     *
+     * Example:
+     *
+     * <code>
+     * <?php
+     *     'filter' => static function ($entry): bool {
+     *         $augmented = $entry->newAugmentedInstance();
+     *         if (!($metaRobots = $augmented->get('meta_robots')) || !is_array($metaRobotsArray = $metaRobots->raw())) {
+     *             return true;
+     *         }
+     *
+     *         return !in_array('noindex', $metaRobotsArray, true);
+     *     }
+     * ?>
+     * </code>
      */
-    'filter' => static function ($entry): bool {
-        /* example:
-
-        $augmented = $entry->newAugmentedInstance();
-
-        if (!($metaRobots = $augmented->get('meta_robots')) || !is_array($metaRobotsArray = $metaRobots->raw())) {
-            return true;
-        }
-
-        return !in_array('noindex', $metaRobotsArray, true);
-        */
-
-        return true;
-    },
+    'filter' => null,
 
     /**
-     * Provide properties for sitemap entries to override default values.
+     * Callable to provide properties for sitemap entries to override default values (optional)
      *
-     * Possible array fields are:
-     * - loc: string: absolute url
-     * - lastmod: DateTime: date of last modification
-     * - changefreq: string|null: see https://www.sitemaps.org/de/protocol.html#changefreqdef
-     * - priority: float|null: value in range 0 to 1
+     * Argument:
+     *      $entry: Statamic\Taxonomies\LocalizedTerm|Statamic\Entries\Entry
      *
-     * @param  LocalizedTerm|Entry  $entry
-     * @return null|array   array of overrides or null to use default values
+     * Result:
+     *     null|array with optional fields:
+     *     - loc: string: absolute url
+     *     - lastmod: DateTime: date of last modification
+     *     - changefreq: string|null: see https://www.sitemaps.org/de/protocol.html#changefreqdef
+     *     - priority: float|null: value in range 0 to 1
+     *
+     * Example:
+     *
+     * <code>
+     * <?php
+     *     'properties' => static function ($entry): ?array {
+     *         if ($entry instanceof \Statamic\Taxonomies\LocalizedTerm) {
+     *             return [
+     *                 'changefreq' => 'weekly',
+     *                 'priority' => 0.3,
+     *             ];
+     *         }
+     *
+     *         if ($entry->collectionHandle() === 'blog') {
+     *             return [
+     *                 'changefreq' => 'monthly',
+     *                 'priority' => 0.5,
+     *             ];
+     *         }
+     *
+     *         return null;
+     *     }
+     * ?>
+     * </code>
      */
-    'properties' => static function ($entry): ?array {
-        /* example:
-
-        if ($entry instanceof LocalizedTerm) {
-            return [
-                'changefreq' => 'weekly',
-                'priority' => 0.3,
-            ];
-        }
-
-        if ($entry->collectionHandle() === 'blog') {
-            return [
-                'changefreq' => 'monthly',
-                'priority' => 0.5,
-            ];
-        }
-
-        return null;
-        */
-
-        return null;
-    },
+    'properties' => null,
 ];
