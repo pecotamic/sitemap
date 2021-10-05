@@ -20,6 +20,6 @@ class SitemapController extends Controller
             ])->render();
         });
 
-        return response($content)->header('Content-Type', 'text/xml')->header('Expires', $cacheUntil->format('D, d M Y H:i:s T'));
+        return response($content)->header('Content-Type', 'application/xml')->header('Expires', $cacheUntil->format('D, d M Y H:i:s T'));
     }
 }
