@@ -17,9 +17,12 @@ class SitemapController extends Controller
         $content = Cache::remember(self::CACHE_KEY, $cacheUntil, function () {
             return view('pecotamic/sitemap::sitemap', [
                 'entries' => Sitemap::entries(),
+                'xml_header' => '<?xml version="1.0" encoding="UTF-8"?>',
             ])->render();
         });
 
-        return response($content)->header('Content-Type', 'application/xml')->header('Expires', $cacheUntil->format('D, d M Y H:i:s T'));
+        return response($content)
+            ->header('Content-Type', 'application/xml')
+            ->header('Expires', $cacheUntil->format('D, d M Y H:i:s T'));
     }
 }
