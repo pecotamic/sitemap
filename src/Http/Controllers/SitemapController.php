@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 use Pecotamic\Sitemap\Models\Sitemap;
 use Pecotamic\Sitemap\Models\SitemapEntry;
+use Statamic\Facades\Site;
 use Statamic\Support\Str;
 use Statamic\View\Antlers\Engine as AntlersEngine;
 
@@ -18,7 +19,7 @@ class SitemapController extends Controller
     public function show()
     {
         $cacheUntil = Carbon::now()->addSeconds(config('pecotamic.sitemap.expire'));
-        $content = Cache::remember(self::CACHE_KEY, $cacheUntil, function () {
+        $content = Cache::remember(self::cacheKey(), $cacheUntil, function () {
             $view = view('pecotamic/sitemap::sitemap');
             return $view->with([
                 'entries' => self::entriesFor($view),
@@ -29,6 +30,11 @@ class SitemapController extends Controller
         return response($content)
             ->header('Content-Type', 'application/xml')
             ->header('Expires', $cacheUntil->format('D, d M Y H:i:s T'));
+    }
+
+    private static function cacheKey(): string
+    {
+        return self::CACHE_KEY . '.' . Site::current()->handle();
     }
 
     /**
