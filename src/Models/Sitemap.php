@@ -5,6 +5,7 @@ namespace Pecotamic\Sitemap\Models;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Site;
 use Statamic\Facades\Taxonomy;
+use Statamic\Fields\Value;
 
 class Sitemap
 {
@@ -48,6 +49,10 @@ class Sitemap
                 if ($callback = config('pecotamic.sitemap.properties')) {
                     $properties = ($callback($entry) ?? []) + $properties;
                 }
+
+                $properties = array_map(static function ($value) {
+                    return $value instanceof Value ? $value->value() : $value;
+                }, $properties);
 
                 return new SitemapEntry($properties['loc'], $properties['lastmod'], $properties['changefreq'], $properties['priority']);
             })
