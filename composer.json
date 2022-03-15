@@ -3,6 +3,10 @@
     "description": "Simple sitemap addon for Statamic v3",
     "type": "statamic-addon",
     "license": "MIT",
+    "keywords": [
+        "statamic",
+        "sitemap"
+    ],
     "require": {
         "php": "^5.4 || ^7.0 || ^8.0",
         "statamic/cms": "^3.0.0"
