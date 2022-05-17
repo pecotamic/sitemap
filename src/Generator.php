@@ -1,32 +1,31 @@
 <?php
 
-namespace Pecotamic\Sitemap\Models;
+namespace Pecotamic\Sitemap;
 
+use Illuminate\Support\Facades\Facade;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Site;
 use Statamic\Facades\Taxonomy;
 use Statamic\Fields\Value;
 
-class Sitemap
+class Generator extends Facade
 {
     /**
      * @return SitemapEntry[]|array
      */
-    public static function entries(): array
+    public function entries(): array
     {
-        $sitemap = new static;
-
         $entries = collect();
 
         // collect
         if (config('pecotamic.sitemap.include_entries', true)) {
-            $entries = $entries->merge($sitemap->publishedEntries(config('pecotamic.sitemap.entry_types')));
+            $entries = $entries->merge($this->publishedEntries(config('pecotamic.sitemap.entry_types')));
         }
         if (config('pecotamic.sitemap.include_terms', true)) {
-            $entries = $entries->merge($sitemap->publishedTerms());
+            $entries = $entries->merge($this->publishedTerms());
         }
         if (config('pecotamic.sitemap.include_collection_terms', true)) {
-            $entries = $entries->merge($sitemap->publishedCollectionTerms());
+            $entries = $entries->merge($this->publishedCollectionTerms());
         }
 
         // filter by current site
