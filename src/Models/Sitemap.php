@@ -9,6 +9,8 @@ use Statamic\Fields\Value;
 
 class Sitemap
 {
+    protected static $extraEntries;
+
     /**
      * @return SitemapEntry[]|array
      */
@@ -42,7 +44,7 @@ class Sitemap
             $entries = $entries->filter($callback);
         }
 
-        return $entries
+        $sitemapEntries = $entries
             ->map(function ($entry) {
                 $properties = self::sitemapProperties($entry);
 
@@ -56,7 +58,17 @@ class Sitemap
 
                 return new SitemapEntry($properties['loc'], $properties['lastmod'], $properties['changefreq'], $properties['priority']);
             })
-            ->values()
+            ->values();
+
+        // add extra sitemap entries
+        if (self::$extraEntries !== null) {
+            $extra = self::$extraEntries->flatMap(function ($closure) {
+                return $closure();
+            });
+            $sitemapEntries = $sitemapEntries->merge($extra);
+        }
+
+        return $sitemapEntries
             ->sortBy(function (SitemapEntry $entry) {
                 return substr_count(rtrim($entry->path, '/'), '/');
             })
@@ -113,6 +125,15 @@ class Sitemap
             ->filter(function ($term) {
                 return view()->exists($term->template());
             });
+    }
+
+    public static function addEntries($closure)
+    {
+        if (self::$extraEntries === null) {
+            self::$extraEntries = collect();
+        }
+
+        self::$extraEntries[] = $closure;
     }
 
     protected static function siteFilter($currentSite): callable
