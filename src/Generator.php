@@ -10,6 +10,8 @@ use Statamic\Fields\Value;
 
 class Generator extends Facade
 {
+    protected static $extraEntries;
+
     /**
      * @return SitemapEntry[]|array
      */
@@ -41,7 +43,7 @@ class Generator extends Facade
             $entries = $entries->filter($callback);
         }
 
-        return $entries
+        $sitemapEntries = $entries
             ->map(function ($entry) {
                 $properties = self::sitemapProperties($entry);
 
@@ -55,7 +57,17 @@ class Generator extends Facade
 
                 return new SitemapEntry($properties['loc'], $properties['lastmod'], $properties['changefreq'], $properties['priority']);
             })
-            ->values()
+            ->values();
+
+        // add extra sitemap entries
+        if (self::$extraEntries !== null) {
+            $extra = self::$extraEntries->flatMap(function ($closure) {
+                return $closure();
+            });
+            $sitemapEntries = $sitemapEntries->merge($extra);
+        }
+
+        return $sitemapEntries
             ->sortBy(function (SitemapEntry $entry) {
                 return substr_count(rtrim($entry->path, '/'), '/');
             })
@@ -112,6 +124,15 @@ class Generator extends Facade
             ->filter(function ($term) {
                 return view()->exists($term->template());
             });
+    }
+
+    public static function addEntries($closure)
+    {
+        if (self::$extraEntries === null) {
+            self::$extraEntries = collect();
+        }
+
+        self::$extraEntries[] = $closure;
     }
 
     protected static function siteFilter($currentSite): callable
