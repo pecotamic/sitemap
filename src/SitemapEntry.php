@@ -1,6 +1,6 @@
 <?php
 
-namespace Pecotamic\Sitemap\Models;
+namespace Pecotamic\Sitemap;
 
 class SitemapEntry
 {

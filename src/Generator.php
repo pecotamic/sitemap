@@ -1,32 +1,38 @@
 <?php
 
-namespace Pecotamic\Sitemap\Models;
+namespace Pecotamic\Sitemap;
 
+use Illuminate\Support\Facades\Facade;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Site;
 use Statamic\Facades\Taxonomy;
 use Statamic\Fields\Value;
 
-class Sitemap
+class Generator extends Facade
 {
+    protected $extraEntries;
+
+    public function __construct()
+    {
+        $this->extraEntries = collect();
+    }
+
     /**
      * @return SitemapEntry[]|array
      */
-    public static function entries(): array
+    public function entries(): array
     {
-        $sitemap = new static;
-
         $entries = collect();
 
         // collect
         if (config('pecotamic.sitemap.include_entries', true)) {
-            $entries = $entries->merge($sitemap->publishedEntries(config('pecotamic.sitemap.entry_types')));
+            $entries = $entries->merge($this->publishedEntries(config('pecotamic.sitemap.entry_types')));
         }
         if (config('pecotamic.sitemap.include_terms', true)) {
-            $entries = $entries->merge($sitemap->publishedTerms());
+            $entries = $entries->merge($this->publishedTerms());
         }
         if (config('pecotamic.sitemap.include_collection_terms', true)) {
-            $entries = $entries->merge($sitemap->publishedCollectionTerms());
+            $entries = $entries->merge($this->publishedCollectionTerms());
         }
 
         // filter by current site
@@ -42,7 +48,8 @@ class Sitemap
             $entries = $entries->filter($callback);
         }
 
-        return $entries
+        // find entries
+        $entries = $entries
             ->map(function ($entry) {
                 $properties = self::sitemapProperties($entry);
 
@@ -56,11 +63,31 @@ class Sitemap
 
                 return new SitemapEntry($properties['loc'], $properties['lastmod'], $properties['changefreq'], $properties['priority']);
             })
-            ->values()
-            ->sortBy(function (SitemapEntry $entry) {
+            ->values();
+
+        // add extra sitemap entries
+        $extraEntries = $this->extraEntries
+            ->flatMap(static function ($closure) {
+                return $closure();
+            })
+            ->map(static function (SitemapEntry $entry) {
+                $entry->loc = self::absoluteUrl($entry->loc);
+                return $entry;
+            });
+
+        return $entries
+            ->merge($extraEntries)
+            ->sortBy(static function (SitemapEntry $entry) {
                 return substr_count(rtrim($entry->path, '/'), '/');
             })
             ->toArray();
+    }
+
+    public function addEntries($closure): self
+    {
+        $this->extraEntries[] = $closure;
+
+        return $this;
     }
 
     protected function publishedEntries(?array $entryTypes = null): \Illuminate\Support\Collection
@@ -84,6 +111,15 @@ class Sitemap
     protected static function isAbsoluteUrl(string $url): bool
     {
         return preg_match('#^https?://#', $url);
+    }
+
+    protected static function absoluteUrl(string $url): string
+    {
+        if (self::isAbsoluteUrl($url)) {
+            return $url;
+        }
+
+        return Site::current()->absoluteUrl() . $url;
     }
 
     protected function publishedTerms()

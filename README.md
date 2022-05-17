@@ -1,5 +1,7 @@
 # Sitemap Addon for Statamic
 
+![Statamic 3.0+](https://img.shields.io/badge/Statamic-3.0+-FF269E?style=for-the-badge&link=https://statamic.com)
+
 Automatically adds a sitemap to your Statamic v3 web site. The default path is &lt;your web site&gt;/sitemap.xml
 
 ## Installation
@@ -38,14 +40,34 @@ If you prefer another view engine, it is also possible. For example to use Antle
 
 An array of sitemap **entries** is passed to the view template. Each **entry** has these properties: 
 
- * **path**: The page path (without host name)
- * **loc**:  The absolute url
- * **lastmod**: A date object of the last modification date 
- * **changefreq**: The entry property `change_frequency`, if available 
- * **priority**: The entry property `property`, if available 
+ * **loc**: The absolute url
+ * **path**: The relative path
+ * **lastmod**: A `DateTime` object of the last modification date 
+ * **changefreq**: A string like 'daily', 'weekly' (optional) 
+ * **priority**: A string presenting a float value between 0 and 1 (optional) 
 
-The missing values can be overriden in the template.
+### Dynamically adding entries (optional)
+
+You may add entries dynamically by providing a closure that returns an array to the `addEntries` method.
+
+```php
+use Pecotamic\Sitemap\Sitemap;
+use Pecotamic\Sitemap\SitemapEntry;
+
+class AppServiceProvider extends Provider
+{
+    public function boot()
+    {
+        Sitemap::addEntries(static function () {
+            return [
+                new SitemapEntry('/hidden-page', new \DateTime('2020-02-20')),
+                new SitemapEntry('/about-me', new \DateTime('now'), 'daily', '1.0'),
+            ];
+        });
+    }
+}
+```
 
 ## Credits
 
-Thanks for code contribution to Prageeth Silva.
+Thanks for code contribution to [Prageeth Silva](/prageeth) and [Poh Nean](/pohnean).
