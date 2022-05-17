@@ -10,7 +10,12 @@ use Statamic\Fields\Value;
 
 class Generator extends Facade
 {
-    protected static $extraEntries;
+    protected $extraEntries;
+
+    public function __construct()
+    {
+        $this->extraEntries = collect();
+    }
 
     /**
      * @return SitemapEntry[]|array
@@ -43,7 +48,8 @@ class Generator extends Facade
             $entries = $entries->filter($callback);
         }
 
-        $sitemapEntries = $entries
+        // find entries
+        $entries = $entries
             ->map(function ($entry) {
                 $properties = self::sitemapProperties($entry);
 
@@ -60,18 +66,28 @@ class Generator extends Facade
             ->values();
 
         // add extra sitemap entries
-        if (self::$extraEntries !== null) {
-            $extra = self::$extraEntries->flatMap(function ($closure) {
+        $extraEntries = $this->extraEntries
+            ->flatMap(static function ($closure) {
                 return $closure();
+            })
+            ->map(static function (SitemapEntry $entry) {
+                $entry->loc = self::absoluteUrl($entry->loc);
+                return $entry;
             });
-            $sitemapEntries = $sitemapEntries->merge($extra);
-        }
 
-        return $sitemapEntries
-            ->sortBy(function (SitemapEntry $entry) {
+        return $entries
+            ->merge($extraEntries)
+            ->sortBy(static function (SitemapEntry $entry) {
                 return substr_count(rtrim($entry->path, '/'), '/');
             })
             ->toArray();
+    }
+
+    public function addEntries($closure): self
+    {
+        $this->extraEntries[] = $closure;
+
+        return $this;
     }
 
     protected function publishedEntries(?array $entryTypes = null): \Illuminate\Support\Collection
@@ -95,6 +111,15 @@ class Generator extends Facade
     protected static function isAbsoluteUrl(string $url): bool
     {
         return preg_match('#^https?://#', $url);
+    }
+
+    protected static function absoluteUrl(string $url): string
+    {
+        if (self::isAbsoluteUrl($url)) {
+            return $url;
+        }
+
+        return Site::current()->absoluteUrl() . $url;
     }
 
     protected function publishedTerms()
@@ -124,15 +149,6 @@ class Generator extends Facade
             ->filter(function ($term) {
                 return view()->exists($term->template());
             });
-    }
-
-    public static function addEntries($closure)
-    {
-        if (self::$extraEntries === null) {
-            self::$extraEntries = collect();
-        }
-
-        self::$extraEntries[] = $closure;
     }
 
     protected static function siteFilter($currentSite): callable
