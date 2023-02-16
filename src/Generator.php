@@ -104,7 +104,7 @@ class Generator extends Facade
                     return false;
                 }
 
-                return $entry->published();
+                return $entry->status() === 'published';
             });
     }
 
