@@ -8,6 +8,6 @@ Site::all()->map(function ($site) {
     return URL::makeRelative($site->url());
 })->unique()->each(function ($sitePrefix) {
     Route::group(['prefix' => $sitePrefix], static function () {
-        Route::get(config('pecotamic.sitemap.url'), 'SitemapController@show');
+        Route::get(config('pecotamic.sitemap.url'), 'Pecotamic\\Sitemap\\Http\\Controllers\\SitemapController@show');
     });
 });
