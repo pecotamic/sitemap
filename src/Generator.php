@@ -153,9 +153,8 @@ class Generator extends Facade
 
     protected static function siteFilter(\Statamic\Sites\Site $currentSite): callable
     {
-        return static function (\Statamic\Entries\Entry $entry) use ($currentSite) {
-            return $entry->redirectUrl() === null
-                && $entry->locale() === $currentSite->lang();
+        return static function ($entry) use ($currentSite) {
+            return !$entry->isRedirect() && $entry->locale() === $currentSite->handle();
         };
     }
 
