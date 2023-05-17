@@ -36,7 +36,7 @@ class Generator extends Facade
         }
 
         // filter by current site
-        $entries = $entries->filter(self::siteFilter(Site::current()->handle()));
+        $entries = $entries->filter(self::siteFilter(Site::current()));
 
         // filter by config
         if ($excludedUrls = config('pecotamic.sitemap.exclude_urls')) {
@@ -151,10 +151,11 @@ class Generator extends Facade
             });
     }
 
-    protected static function siteFilter($currentSite): callable
+    protected static function siteFilter(\Statamic\Sites\Site $currentSite): callable
     {
-        return static function ($entry) use ($currentSite) {
-            return $entry->locale() === $currentSite;
+        return static function (\Statamic\Entries\Entry $entry) use ($currentSite) {
+            return $entry->redirectUrl() === null
+                && $entry->locale() === $currentSite->lang();
         };
     }
 
