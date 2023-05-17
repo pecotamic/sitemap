@@ -2,7 +2,10 @@
 
 namespace Pecotamic\Sitemap;
 
+use Statamic\Facades\Site;
+use Statamic\Facades\URL;
 use Statamic\Providers\AddonServiceProvider;
+use Statamic\StaticSite\SSG;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -32,5 +35,32 @@ class ServiceProvider extends AddonServiceProvider
         ], 'config');
 
         return $this;
+    }
+
+    protected function bootRoutes(): self
+    {
+        parent::bootRoutes();
+
+        $this->addRoutesToSSG();
+
+        return $this;
+    }
+
+    protected function addRoutesToSSG(): void
+    {
+        if (!class_exists(SSG::class)) {
+            return;
+        }
+
+        SSG::addUrls(static function () {
+            return Site::all()
+                ->map(function ($site) {
+                    return URL::makeRelative($site->url());
+                })
+                ->unique()
+                ->map(function ($sitePrefix) {
+                    return $sitePrefix . '/' . config('pecotamic.sitemap.url');
+                });
+        });
     }
 }
