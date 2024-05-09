@@ -1,8 +1,10 @@
 # Sitemap Addon for Statamic
 
 ![Statamic 3.0+](https://img.shields.io/badge/Statamic-3.0+-FF269E?style=for-the-badge&link=https://statamic.com)
+![Statamic 4.0+](https://img.shields.io/badge/Statamic-4.0+-FF269E?style=for-the-badge&link=https://statamic.com)
+![Statamic 5.0+](https://img.shields.io/badge/Statamic-5.0+-FF269E?style=for-the-badge&link=https://statamic.com)
 
-Automatically adds a sitemap to your Statamic v3 web site. The default path is &lt;your web site&gt;/sitemap.xml
+Automatically adds a sitemap to your Statamic web site. The default path is &lt;your web site&gt;/sitemap.xml
 
 ## Installation
 
@@ -12,7 +14,7 @@ Include the package with composer:
 composer require pecotamic/sitemap
 ```
 
-The package requires Laravel 7+ and PHP 7.3+. It will auto register.
+The package requires PHP 7.3+ or PHP 8+. It will auto register.
 
 ## Configuration (optional)
 
