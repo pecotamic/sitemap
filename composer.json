@@ -1,6 +1,6 @@
 {
     "name": "pecotamic/sitemap",
-    "description": "Simple sitemap addon for Statamic v3",
+    "description": "Simple sitemap addon for Statamic",
     "type": "statamic-addon",
     "license": "MIT",
     "keywords": [
@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "^7.1|^8.0",
-        "statamic/cms": "^3.0|^4.0|^5.0"
+        "statamic/cms": "^3.0|^4.0|^5.0|^6.0"
     },
     "autoload": {
         "psr-4": {

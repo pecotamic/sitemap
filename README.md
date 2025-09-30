@@ -1,16 +1,17 @@
 # Sitemap Addon for Statamic
 
-![Statamic 3.0+](https://img.shields.io/badge/Statamic-3.0+-FF269E?style=for-the-badge&link=https://statamic.com)
-![Statamic 4.0+](https://img.shields.io/badge/Statamic-4.0+-FF269E?style=for-the-badge&link=https://statamic.com)
-![Statamic 5.0+](https://img.shields.io/badge/Statamic-5.0+-FF269E?style=for-the-badge&link=https://statamic.com)
+![Statamic 3](https://img.shields.io/badge/Statamic-3.0+-DD9826?style=for-the-badge&link=https://statamic.com)
+![Statamic 4](https://img.shields.io/badge/Statamic-4.0+-92C81B?style=for-the-badge&link=https://statamic.com)
+![Statamic 5](https://img.shields.io/badge/Statamic-5.0+-26BBDD?style=for-the-badge&link=https://statamic.com)
+![Statamic 6](https://img.shields.io/badge/Statamic-6.0+-FF269E?style=for-the-badge&link=https://statamic.com)
 
 Automatically adds a sitemap to your Statamic web site. The default path is &lt;your web site&gt;/sitemap.xml
 
-## Installation
+## How to Install
 
-Include the package with composer:
+You can search for this addon in the `Tools > Addons` section of the Statamic control panel and click **install**, or run the following command from your project root:
 
-```sh
+``` bash
 composer require pecotamic/sitemap
 ```
 
