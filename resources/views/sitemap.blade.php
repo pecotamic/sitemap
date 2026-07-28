@@ -6,7 +6,9 @@
 @foreach ($entries as $entry)
     <url>
         <loc>{{ $entry->loc }}</loc>
-        <lastmod>{{ $entry->lastmod->format("c") }}</lastmod>
+        @if ($entry->lastmod)
+            <lastmod>{{ $entry->lastmod->format("c") }}</lastmod>
+        @endif
         @if ($entry->changefreq)
             <changefreq>{{ $entry->changefreq }}</changefreq>
         @endif

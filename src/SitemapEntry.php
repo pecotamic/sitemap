@@ -10,7 +10,7 @@ class SitemapEntry
     public $changefreq;
     public $priority;
 
-    public function __construct(string $loc, \DateTime $lastmod, ?string $changefreq = null, ?string $priority = null)
+    public function __construct(string $loc, ?\DateTime $lastmod = null, ?string $changefreq = null, ?string $priority = null)
     {
         $this->loc = $loc;
         $this->path = parse_url($loc)['path'] ?? '/';
