@@ -93,18 +93,24 @@ class Generator
     protected function publishedEntries(?array $entryTypes = null): \Illuminate\Support\Collection
     {
         return Collection::all()
-            ->flatMap(function ($collection) {
-                return $collection->queryEntries()->get();
+            ->filter(static function ($collection) use ($entryTypes) {
+                return $entryTypes === null || in_array($collection->handle(), $entryTypes, true);
             })
-            ->filter(function ($entry) use ($entryTypes) {
-                if (($absoluteUrl = $entry->absoluteUrl()) === null || !self::isAbsoluteUrl($absoluteUrl)) {
-                    return false;
-                }
-                if ($entryTypes !== null && !in_array($entry->collectionHandle(), $entryTypes)) {
-                    return false;
-                }
+            ->flatMap(static function ($collection) {
+                $query = $collection->queryEntries();
 
-                return $entry->status() === 'published';
+                // Filter by status at the query level when supported (Statamic 4+),
+                // otherwise fall back to filtering the loaded entries.
+                return method_exists($query, 'whereStatus')
+                    ? $query->whereStatus('published')->get()
+                    : $query->get()->filter(static function ($entry) {
+                        return $entry->status() === 'published';
+                    });
+            })
+            ->filter(function ($entry) {
+                $absoluteUrl = $entry->absoluteUrl();
+
+                return $absoluteUrl !== null && self::isAbsoluteUrl($absoluteUrl);
             });
     }
 
