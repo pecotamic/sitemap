@@ -110,7 +110,7 @@ class Generator
 
     protected static function isAbsoluteUrl(string $url): bool
     {
-        return preg_match('#^https?://#', $url);
+        return preg_match('#^https?://#', $url) === 1;
     }
 
     protected static function absoluteUrl(string $url): string
