@@ -3,6 +3,8 @@
 ![Statamic 5](https://img.shields.io/badge/Statamic-5.0+-26BBDD?style=for-the-badge&link=https://statamic.com)
 ![Statamic 6](https://img.shields.io/badge/Statamic-6.0+-FF269E?style=for-the-badge&link=https://statamic.com)
 
+[![Tests](https://github.com/pecotamic/sitemap/actions/workflows/tests.yml/badge.svg)](https://github.com/pecotamic/sitemap/actions/workflows/tests.yml)
+
 Automatically adds a sitemap to your Statamic web site. The default path is &lt;your web site&gt;/sitemap.xml
 
 ## How to Install
