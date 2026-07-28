@@ -97,15 +97,7 @@ class Generator
                 return $entryTypes === null || in_array($collection->handle(), $entryTypes, true);
             })
             ->flatMap(static function ($collection) {
-                $query = $collection->queryEntries();
-
-                // Filter by status at the query level when supported (Statamic 4+),
-                // otherwise fall back to filtering the loaded entries.
-                return method_exists($query, 'whereStatus')
-                    ? $query->whereStatus('published')->get()
-                    : $query->get()->filter(static function ($entry) {
-                        return $entry->status() === 'published';
-                    });
+                return $collection->queryEntries()->whereStatus('published')->get();
             })
             ->filter(function ($entry) {
                 $absoluteUrl = $entry->absoluteUrl();
