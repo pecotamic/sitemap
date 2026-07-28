@@ -2,13 +2,12 @@
 
 namespace Pecotamic\Sitemap;
 
-use Illuminate\Support\Facades\Facade;
 use Statamic\Facades\Collection;
 use Statamic\Facades\Site;
 use Statamic\Facades\Taxonomy;
 use Statamic\Fields\Value;
 
-class Generator extends Facade
+class Generator
 {
     protected $extraEntries;
 
