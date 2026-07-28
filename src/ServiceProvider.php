@@ -53,14 +53,22 @@ class ServiceProvider extends AddonServiceProvider
         }
 
         SSG::addUrls(static function () {
-            return Site::all()
-                ->map(function ($site) {
-                    return URL::makeRelative($site->url());
-                })
-                ->unique()
-                ->map(function ($sitePrefix) {
-                    return $sitePrefix . '/' . config('pecotamic.sitemap.url');
-                });
+            return self::sitePrefixes()->map(static function ($sitePrefix) {
+                return $sitePrefix . '/' . config('pecotamic.sitemap.url');
+            });
         });
+    }
+
+    /**
+     * Relative URL prefix for each configured site (deduplicated).
+     */
+    public static function sitePrefixes(): \Illuminate\Support\Collection
+    {
+        return Site::all()
+            ->map(static function ($site) {
+                return URL::makeRelative($site->url());
+            })
+            ->unique()
+            ->values();
     }
 }
