@@ -12,10 +12,7 @@
         @if ($entry->changefreq)
             <changefreq>{{ $entry->changefreq }}</changefreq>
         @endif
-        <priority>@if ($entry->priority){{ $entry->priority }}
-            @elseif ($entry->path === '/') 1
-            @else 0.8 @endif
-        </priority>
+        <priority>{{ $entry->priority }}</priority>
     </url>
 @endforeach
 
