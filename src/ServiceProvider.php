@@ -2,6 +2,11 @@
 
 namespace Pecotamic\Sitemap;
 
+use Pecotamic\Sitemap\Listeners\ClearSitemapCache;
+use Statamic\Events\EntryDeleted;
+use Statamic\Events\EntrySaved;
+use Statamic\Events\TermDeleted;
+use Statamic\Events\TermSaved;
 use Statamic\Facades\Site;
 use Statamic\Facades\URL;
 use Statamic\Providers\AddonServiceProvider;
@@ -13,6 +18,13 @@ class ServiceProvider extends AddonServiceProvider
 
     protected $routes = [
         'web' => __DIR__.'/../routes/web.php',
+    ];
+
+    protected $listen = [
+        EntrySaved::class => [ClearSitemapCache::class],
+        EntryDeleted::class => [ClearSitemapCache::class],
+        TermSaved::class => [ClearSitemapCache::class],
+        TermDeleted::class => [ClearSitemapCache::class],
     ];
 
     protected function bootViews(): self
