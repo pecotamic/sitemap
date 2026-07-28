@@ -11,10 +11,22 @@
         "php": "^8.2",
         "statamic/cms": "^5.0|^6.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^9.0 || ^10.0",
+        "phpunit/phpunit": "^10.5 || ^11.0 || ^12.0"
+    },
     "autoload": {
         "psr-4": {
             "Pecotamic\\Sitemap\\": "src"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Pecotamic\\Sitemap\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
     },
     "authors": [{
         "name": "Werner Freytag",
