@@ -1,7 +1,5 @@
 # Sitemap Addon for Statamic
 
-![Statamic 3](https://img.shields.io/badge/Statamic-3.0+-DD9826?style=for-the-badge&link=https://statamic.com)
-![Statamic 4](https://img.shields.io/badge/Statamic-4.0+-92C81B?style=for-the-badge&link=https://statamic.com)
 ![Statamic 5](https://img.shields.io/badge/Statamic-5.0+-26BBDD?style=for-the-badge&link=https://statamic.com)
 ![Statamic 6](https://img.shields.io/badge/Statamic-6.0+-FF269E?style=for-the-badge&link=https://statamic.com)
 
@@ -15,7 +13,7 @@ You can search for this addon in the `Tools > Addons` section of the Statamic co
 composer require pecotamic/sitemap
 ```
 
-The package requires PHP 7.3+ or PHP 8+. It will auto register.
+The package requires PHP 8.2+. It will auto register.
 
 ## Configuration (optional)
 
@@ -45,9 +43,9 @@ An array of sitemap **entries** is passed to the view template. Each **entry** h
 
  * **loc**: The absolute url
  * **path**: The relative path
- * **lastmod**: A `DateTime` object of the last modification date 
+ * **lastmod**: A `DateTime` object of the last modification date, or `null` 
  * **changefreq**: A string like 'daily', 'weekly' (optional) 
- * **priority**: A string presenting a float value between 0 and 1 (optional) 
+ * **priority**: A float value between 0 and 1 (defaults to 1.0 for the root path, 0.8 otherwise) 
 
 ### Dynamically adding entries (optional)
 
@@ -64,7 +62,7 @@ class AppServiceProvider extends Provider
         Sitemap::addEntries(static function () {
             return [
                 new SitemapEntry('/hidden-page', new \DateTime('2020-02-20')),
-                new SitemapEntry('/about-me', new \DateTime('now'), 'daily', '1.0'),
+                new SitemapEntry('/about-me', new \DateTime('now'), 'daily', 1.0),
             ];
         });
     }
